@@ -6,7 +6,7 @@ function App() {
 
 
   return (
-    <div className='h-full'>
+    <div className='h-screen relative'>
       <Menu/>
       <Organizador/>
     </div>

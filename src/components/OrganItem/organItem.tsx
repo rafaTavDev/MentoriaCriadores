@@ -1,55 +1,62 @@
-import { useState } from "react"
-import { DragDropContext, Droppable } from "@hello-pangea/dnd"
-import Task from "../Task/Task"
-
+import { useState, Dispatch, SetStateAction } from "react"
+import ColunaItems from "../ColunaItems/ColunaItems"
+import { DragDropContext } from "@hello-pangea/dnd"
 
 type Props = {
-    index: number
+    temModalFn: Dispatch<SetStateAction<boolean>>
 }
 
-export default function OrganItem({index}: Props){
 
-    const [tasks, setTasks] = useState([
+export default function OrganItem({temModalFn}: Props){
+
+    const [taskColumns, setTaskColumns] = useState([
         {
-            id: "0",
-            task: "Sou a primeira task"
+            Tasks:[
+                {
+                    id: "0",
+                    task: "Sou a primeira task"
+                },
+                {
+                    id: "1",
+                    task: "Sou a segunda task"
+                }
+            ],
+            idColumn: "0"
         },
         {
-            id: "1",
-            task: "Sou a segunda task"
-        }
+            Tasks:[
+                {
+                    id: "2",
+                    task: "Sou a primeira task"
+                },
+                {
+                    id: "3",
+                    task: "Sou a segunda task"
+                }
+            ],
+            idColumn: "1"
+        },
     ])
 
 
-    function reorder<T>(list: T[], startIdx: number, endIdx: number){
-        const result = Array.from(list)
-        console.log(result)
-        const [removed] = result.splice(startIdx, 1)
-        result.splice(endIdx, 0, removed)
-        console.log(result)
-        return result
+    function reorder(startIdx: number, endIdx: number, startCol: number, endCol: number){
+        const taskColumnsCopy = JSON.parse(JSON.stringify(taskColumns))
+        const [removed] = taskColumnsCopy[startCol].Tasks.splice(startIdx, 1)
+        taskColumnsCopy[endCol].Tasks.splice(endIdx, 0, removed)
+        return taskColumnsCopy
     }
 
 
     function onDragEnd(result: any){
-        const items = reorder(tasks, result.source.index, result.destination.index)
-        console.log(items)
-        setTasks(items)
+
+        const newTaskColumns = reorder(result.source.index, result.destination.index, result.source.droppableId, result.destination.droppableId) //Aqui preciso do index da coluna que solto o item pra fazer taskColumns[indexColunaFinal]
+        setTaskColumns(newTaskColumns)
     }
 
     return (
-        <div className="w-1/6 rounded-xl bg-slate-500 p-3">
+        <div className="flex items-start gap-3">
             <DragDropContext onDragEnd={onDragEnd}>
-                <Droppable droppableId={`item${index }`}>
-                    {
-                        (provided) => (
-                            <div ref={provided.innerRef} {...provided.droppableProps} className="flex flex-col gap-3">
-                                {tasks.map((item, index) => <Task key={item.id} texto={item.task} id={item.id} index={index} />)}
-                                {provided.placeholder}
-                            </div>
-                        )
-                    }
-                </Droppable>
+                {taskColumns.map((item, index) => <ColunaItems temModalFn={temModalFn} key={item.idColumn} tasks={item.Tasks} index={index}/>)}
             </DragDropContext>
         </div>
     )
