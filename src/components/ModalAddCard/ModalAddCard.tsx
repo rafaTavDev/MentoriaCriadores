@@ -2,10 +2,13 @@ import { Dispatch, SetStateAction } from "react"
 import xis from "../../assets/imgs/menu-aberto.svg"
 
 type Props = {
-    temModalFn: Dispatch<SetStateAction<boolean>>
+    temModalFn: Dispatch<SetStateAction<boolean>>,
+    tituloFn: Dispatch<SetStateAction<string>>,
+    descFn: Dispatch<SetStateAction<string>>,
+    addCardFn: () => void
 }
 
-export default function ModalAddCard({temModalFn}: Props){
+export default function ModalAddCard({temModalFn, tituloFn, descFn, addCardFn}: Props){
     return (
         <div className="flex flex-col justify-center items-center absolute inset-0 bg-white/80">
             <div className="flex flex-col h-1/2 w-1/3 bg-cyan-900 p-6 rounded-xl">
@@ -15,12 +18,15 @@ export default function ModalAddCard({temModalFn}: Props){
                 <div className="flex flex-col justify-center flex-1 gap-6">
                     <div className="flex flex-col gap-3">
                         <label htmlFor="textoTitulo" className="text-2xl font-bold">Titulo</label>
-                        <input type="text" id="textoTitulo" className="outline-none border-none p-2 rounded-xl"/>
+                        <input onChange={e => tituloFn(e.target.value)} type="text" id="textoTitulo" className="outline-none border-none p-2 rounded-xl"/>
                     </div>
                     <div className="flex flex-col gap-3">
                         <label htmlFor="textoDesc" className="text-2xl font-bold">Descrição</label>
-                        <textarea className="resize-none outline-none border-none p-2 h-32 rounded-xl"></textarea>
+                        <textarea onChange={e => descFn(e.target.value)} className="resize-none outline-none border-none p-2 h-32 rounded-xl"></textarea>
                     </div>
+                </div>
+                <div className="flex justify-center p-3">
+                    <button onClick={() => {addCardFn(); temModalFn(false)}}>Criar Card</button>
                 </div>
             </div>
         </div>

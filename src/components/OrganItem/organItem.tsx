@@ -1,24 +1,30 @@
-import { useState, Dispatch, SetStateAction } from "react"
+import { useState } from "react"
 import ColunaItems from "../ColunaItems/ColunaItems"
 import { DragDropContext } from "@hello-pangea/dnd"
-
-type Props = {
-    temModalFn: Dispatch<SetStateAction<boolean>>
-}
+import ModalAddCard from "../ModalAddCard/ModalAddCard"
 
 
-export default function OrganItem({temModalFn}: Props){
 
+export default function OrganItem(){
+    const [temModal, setTemModal] = useState<boolean>(false)
+    const [actualColumnModal, setActualColumnModal] = useState<string>("0")
+    const [newTitle, setNewTitle] = useState<string>("")
+    const [newDesc, setNewDesc] = useState<string>("")
+    const [maxIdx, setMaxIdx] = useState<number>(4)
+
+  
     const [taskColumns, setTaskColumns] = useState([
         {
             Tasks:[
                 {
                     id: "0",
-                    task: "Sou a primeira task"
+                    titulo: "Titulo 1",
+                    desc: "Sou a primeira task"
                 },
                 {
                     id: "1",
-                    task: "Sou a segunda task"
+                    titulo: "Titulo 2",
+                    desc: "Sou a segunda task"
                 }
             ],
             idColumn: "0"
@@ -27,16 +33,26 @@ export default function OrganItem({temModalFn}: Props){
             Tasks:[
                 {
                     id: "2",
-                    task: "Sou a primeira task"
+                    titulo: "Titulo 3",
+                    desc: "Sou a terceira task"
                 },
                 {
                     id: "3",
-                    task: "Sou a segunda task"
+                    titulo: "Titulo 4",
+                    desc: "Sou a quarta task"
                 }
             ],
             idColumn: "1"
         },
     ])
+
+
+    function addCard(){
+        const taskColumnsCopy = JSON.parse(JSON.stringify(taskColumns))
+        taskColumnsCopy[Number(actualColumnModal)].Tasks.push({id: `${maxIdx + 1}`, titulo: newTitle, desc: newDesc})
+        setMaxIdx(maxIdx + 1)
+        setTaskColumns(taskColumnsCopy)
+    }
 
 
     function reorder(startIdx: number, endIdx: number, startCol: number, endCol: number){
@@ -56,8 +72,12 @@ export default function OrganItem({temModalFn}: Props){
     return (
         <div className="flex items-start gap-3">
             <DragDropContext onDragEnd={onDragEnd}>
-                {taskColumns.map((item, index) => <ColunaItems temModalFn={temModalFn} key={item.idColumn} tasks={item.Tasks} index={index}/>)}
+                {taskColumns.map((item, index) => <ColunaItems actualColumnFn={setActualColumnModal} temModalFn={setTemModal} key={item.idColumn} tasks={item.Tasks} index={index}/>)}
             </DragDropContext>
+            {
+                temModal &&
+                <ModalAddCard temModalFn={setTemModal} tituloFn={setNewTitle} descFn={setNewDesc} addCardFn={addCard} />
+            }
         </div>
     )
 }
