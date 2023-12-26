@@ -2,19 +2,43 @@ import { useState } from "react"
 import ColunaItems from "../ColunaItems/ColunaItems"
 import { DragDropContext } from "@hello-pangea/dnd"
 import ModalAddCard from "../ModalAddCard/ModalAddCard"
+import ModalEditCard from "../ModalEditCard/ModalEditCard"
+import ModalAddColumn from "../ModalAddColumn/ModalAddColumn"
 
 
 
 export default function OrganItem(){
-    const [temModal, setTemModal] = useState<boolean>(false)
+    const [temModalCard, setTemModalCard] = useState<boolean>(false)
+    const [temModalColumn, setTemModalColumn] = useState<boolean>(false)
+    const [temModalEditCard, setTemModalEditCard] = useState<boolean>(false)
     const [actualColumnModal, setActualColumnModal] = useState<string>("0")
-    const [newTitle, setNewTitle] = useState<string>("")
+    const [newTitleCard, setNewTitleCard] = useState<string>("")
+    const [newTitleEditedCard, setNewTitleEditedCard] = useState<string>("Titulo do card teste")
+    const [newDescEditedCard, setNewDescEditedCard] = useState<string>("desc do card teste")
+    const [idEditedCard, setIdEditedCard] = useState<string>("")
+    const [idEditedColumn, setIdEditedColumn] = useState<number>(0)
+    const [newTitleColumn, setNewTitleColumn] = useState<string>("")
     const [newDesc, setNewDesc] = useState<string>("")
     const [maxIdx, setMaxIdx] = useState<number>(4)
+    const [maxIdColumn, setMaxIdColumn] = useState<number>(1)
+
+    type cardType = {
+        id: string,
+        titulo: string,
+        desc: string
+    }
+
+    type ColumnType = {
+        titleColumn: string,
+        Tasks: cardType[],
+        idColumn: string
+    }
+    type taskColumnsType = ColumnType[]
 
   
-    const [taskColumns, setTaskColumns] = useState([
+    const [taskColumns, setTaskColumns] = useState<taskColumnsType>([
         {
+            titleColumn: "Titulo primeira coluna",
             Tasks:[
                 {
                     id: "0",
@@ -30,6 +54,7 @@ export default function OrganItem(){
             idColumn: "0"
         },
         {
+            titleColumn: "Titulo segunda coluna",
             Tasks:[
                 {
                     id: "2",
@@ -46,11 +71,45 @@ export default function OrganItem(){
         },
     ])
 
+    function openEditModal(titleActualCard: string, descActualCard: string, id: string, idxColumn: number){
+        setTemModalEditCard(true)
+        setNewTitleEditedCard(titleActualCard)
+        setNewDescEditedCard(descActualCard)
+        setIdEditedCard(id)
+        setIdEditedColumn(idxColumn)
+    }
+
+    function removeCard(id: string, idColumn: number){
+        const taskColumnsCopy: taskColumnsType = JSON.parse(JSON.stringify(taskColumns))
+        console.log(taskColumnsCopy.filter(item => item.idColumn == `${idColumn}`)[0])
+
+        let newTasks = taskColumnsCopy.filter(item => item.idColumn == `${idColumn}`)[0].Tasks.filter(item => item.id !== id)
+        taskColumnsCopy.filter(item => item.idColumn == `${idColumn}`)[0].Tasks = newTasks
+        setTaskColumns(taskColumnsCopy) 
+
+    }
+
+    function editCard(){
+        const taskColumnsCopy: taskColumnsType = JSON.parse(JSON.stringify(taskColumns))
+        let idxEditedItem = taskColumnsCopy.filter(item => item.idColumn == `${idEditedColumn}`)[0].Tasks.indexOf(taskColumnsCopy.filter(item => item.idColumn == `${idEditedColumn}`)[0].Tasks.filter(item => item.id == idEditedCard)[0]) 
+        taskColumnsCopy.filter(item => item.idColumn == `${idEditedColumn}`)[0].Tasks[idxEditedItem].titulo = newTitleEditedCard
+        taskColumnsCopy.filter(item => item.idColumn == `${idEditedColumn}`)[0].Tasks[idxEditedItem].desc = newDescEditedCard
+        setTaskColumns(taskColumnsCopy)
+        setTemModalEditCard(false)
+    }
+
 
     function addCard(){
         const taskColumnsCopy = JSON.parse(JSON.stringify(taskColumns))
-        taskColumnsCopy[Number(actualColumnModal)].Tasks.push({id: `${maxIdx + 1}`, titulo: newTitle, desc: newDesc})
+        taskColumnsCopy[Number(actualColumnModal)].Tasks.push({id: `${maxIdx + 1}`, titulo: newTitleCard, desc: newDesc})
         setMaxIdx(maxIdx + 1)
+        setTaskColumns(taskColumnsCopy)
+    }
+
+    function addColumn(){
+        const taskColumnsCopy = JSON.parse(JSON.stringify(taskColumns))
+        taskColumnsCopy.push({titleColumn: newTitleColumn, Tasks:[], idColumn: `${maxIdColumn + 1}`})
+        setMaxIdColumn(maxIdColumn + 1)
         setTaskColumns(taskColumnsCopy)
     }
 
@@ -70,13 +129,24 @@ export default function OrganItem(){
     }
 
     return (
-        <div className="flex items-start gap-3">
+        <div className="flex items-start gap-3 bg-black flex-1 p-3">
             <DragDropContext onDragEnd={onDragEnd}>
-                {taskColumns.map((item, index) => <ColunaItems actualColumnFn={setActualColumnModal} temModalFn={setTemModal} key={item.idColumn} tasks={item.Tasks} index={index}/>)}
+                {taskColumns.map((item, index) => <ColunaItems openEditModal={openEditModal} removeFn={removeCard} tituloColuna={item.titleColumn} actualColumnFn={setActualColumnModal} temModalFn={setTemModalCard} key={item.idColumn} tasks={item.Tasks} idxColumn={index} temModalEditFn={setTemModalEditCard}/>)}
             </DragDropContext>
+            <button onClick={() => setTemModalColumn(true)} className="p-3 text-xl bg-white bg-opacity-50 text-white rounded-xl">
+                Adicionar lista +
+            </button>
             {
-                temModal &&
-                <ModalAddCard temModalFn={setTemModal} tituloFn={setNewTitle} descFn={setNewDesc} addCardFn={addCard} />
+                temModalCard &&
+                <ModalAddCard temModalFn={setTemModalCard} tituloFn={setNewTitleCard} descFn={setNewDesc} addCardFn={addCard} />
+            }
+            {
+                temModalColumn &&
+                <ModalAddColumn temModalFn={setTemModalColumn} tituloFn={setNewTitleColumn} addColumnFn={addColumn} />
+            }
+            {
+                temModalEditCard &&
+                <ModalEditCard temModalFn={setTemModalEditCard} tituloFn={setNewTitleEditedCard} descFn={setNewDescEditedCard} editCardFn={editCard} newTitleEditedCard={newTitleEditedCard} newDescEditedCard={newDescEditedCard} />
             }
         </div>
     )

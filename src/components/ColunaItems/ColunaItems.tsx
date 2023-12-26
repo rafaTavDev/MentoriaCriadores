@@ -5,21 +5,25 @@ import { Droppable } from "@hello-pangea/dnd"
 type objTask = {
     id: string,
     desc: string,
-    titulo: string
+    titulo: string,
 }
 
 type Props = {
     tasks: objTask[],
-    index: number,
+    idxColumn: number,
     temModalFn: Dispatch<SetStateAction<boolean>>,
-    actualColumnFn: Dispatch<SetStateAction<string>>
+    temModalEditFn: Dispatch<SetStateAction<boolean>>,
+    actualColumnFn: Dispatch<SetStateAction<string>>,
+    tituloColuna: string,
+    removeFn: (id: string, idColumn: number) => void,
+    openEditModal: (titleActualCard: string, descActualCard: string, id: string, idxColumn: number) => void
 }
 
-export default function ColunaItems({tasks, index, temModalFn, actualColumnFn}: Props){
+export default function ColunaItems({tasks, idxColumn, temModalFn, actualColumnFn, tituloColuna, removeFn, openEditModal}: Props){
 
     function handleAddClick(){
         temModalFn(true)
-        actualColumnFn(`${index}`)
+        actualColumnFn(`${idxColumn}`)
     }
 
 
@@ -29,13 +33,16 @@ export default function ColunaItems({tasks, index, temModalFn, actualColumnFn}: 
 
     return (
         <div className="w-1/6 rounded-xl bg-slate-500 p-3">
-                <Droppable droppableId={`${index}`}>
+                <Droppable droppableId={`${idxColumn}`}>
                     {
                         (provided) => (
                             <div ref={provided.innerRef} {...provided.droppableProps} className="flex flex-col gap-3">
-                                <button onClick={() => handleAddClick()} className="p-3 text-xl bg-white bg-opacity-50 text-white rounded-xl">Adicionar um card +</button> {/*o bt vai reconhecer a coluna pela variável index*/}
-                                {tasks.map((item, index) => <Task key={item.id} titulo={item.titulo} texto={item.desc} id={item.id} index={index} />)}
+                                <div className="font-bold text-xl">
+                                    {tituloColuna}
+                                </div>
+                                {tasks.map((item, index) => <Task key={item.id} titulo={item.titulo} texto={item.desc} id={item.id} index={index} removeFn={removeFn} idxColumn={idxColumn} openEditModal={openEditModal}/>)}
                                 {provided.placeholder}
+                                <button onClick={() => handleAddClick()} className="p-3 text-xl bg-white bg-opacity-50 text-white rounded-xl">Adicionar um card +</button>
                             </div>
                         )
                     }
