@@ -13,7 +13,7 @@ export default function Menu(){
                         Metas
                     </div>
                     <div className="h-full flex justify-center items-center p-2 cursor-pointer">
-                        Se conhecer
+                        Networking
                     </div>
                     <div className="h-full flex justify-center items-center p-2 cursor-pointer">   
                         Organizador

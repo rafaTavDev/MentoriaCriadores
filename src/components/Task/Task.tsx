@@ -10,11 +10,11 @@ type Props = {
     index: number,
     titulo: string,
     removeFn: (id: string, idColumn: number) => void,
-    idxColumn: number,
+    idColumn: number,
     openEditModal: (titleActualCard: string, descActualCard: string, id: string, idxColumn: number) => void
 }
 
-export default function Task({texto, id, index, titulo, removeFn, idxColumn, openEditModal}: Props){
+export default function Task({texto, id, index, titulo, removeFn, idColumn, openEditModal}: Props){
     return (
         <Draggable draggableId={id} index={index} >
             {
@@ -27,8 +27,8 @@ export default function Task({texto, id, index, titulo, removeFn, idxColumn, ope
                             {texto}
                         </div>
                         <div className="flex gap-3">
-                            <img onClick={() => openEditModal(titulo, texto, id, idxColumn)} className="w-6 h-auto p-1 bg-white opacity-80 rounded-md" src={imgEditar} alt="icone-editar" />{/*id==id, idColumn == index */}
-                            <img onClick={() => removeFn(id, idxColumn)} className="w-6 h-auto p-1 bg-white opacity-80 rounded-md" src={imgApagar} alt="icone-apagar" />
+                            <img onClick={() => openEditModal(titulo, texto, id, idColumn)} className="w-6 h-auto p-1 bg-white opacity-80 rounded-md" src={imgEditar} alt="icone-editar" />{/*id==id, idColumn == index */}
+                            <img onClick={() => { console.log(`o id do card é: ${id}`); console.log(`o id da coluna é: ${idColumn}`); removeFn(id, idColumn)}} className="w-6 h-auto p-1 bg-white opacity-80 rounded-md" src={imgApagar} alt="icone-apagar" />
                         </div>  
                     </div>
                 )
