@@ -9,6 +9,7 @@ type objTask = {
 }
 
 type Props = {
+    setTemModalExcluirColuna: Dispatch<SetStateAction<boolean>>,
     tasks: objTask[],
     idColumn: number,
     temModalFn: Dispatch<SetStateAction<boolean>>,
@@ -21,7 +22,7 @@ type Props = {
     removeColumnFn: (idxRemovedColumn: number) => void
 }
 
-export default function ColunaItems({tasks, idColumn, temModalFn, actualColumnFn, tituloColuna, removeFn, openEditModal, indexColuna, removeColumnFn}: Props){
+export default function ColunaItems({setTemModalExcluirColuna, tasks, idColumn, temModalFn, actualColumnFn, tituloColuna, removeFn, openEditModal, indexColuna, removeColumnFn}: Props){
 
     function handleAddClick(){
         temModalFn(true)

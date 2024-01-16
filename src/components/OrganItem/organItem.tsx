@@ -4,6 +4,7 @@ import { DragDropContext } from "@hello-pangea/dnd"
 import ModalAddCard from "../ModalAddCard/ModalAddCard"
 import ModalEditCard from "../ModalEditCard/ModalEditCard"
 import ModalAddColumn from "../ModalAddColumn/ModalAddColumn"
+import ModalExcluirColuna from "../ModalExcluirColuna/ModalExcluirColuna"
 
 
 
@@ -21,6 +22,8 @@ export default function OrganItem(){
     const [newDesc, setNewDesc] = useState<string>("")
     const [maxId, setMaxId] = useState<number>(0)
     const [maxIdColumn, setMaxIdColumn] = useState<number>(0)
+    const [temModalExcluirColuna, setTemModalExcluirColuna] = useState<boolean>(true)
+    const [colunaPraRemoverIdx, setColunaPraRemoverIdx] = useState<number>(0)
 
     type cardType = {
         id: string,
@@ -37,6 +40,11 @@ export default function OrganItem(){
 
   
     const [taskColumns, setTaskColumns] = useState<taskColumnsType>([])
+
+    useEffect(() => {
+        //Salvar o atual taskColumns no banco de dados aqui, pq ai toda vez que mudar vai salvar (Pra isso não dar merda com os usuários, tem que ter confirmação pra fazer tudo, pelo menos pra apagar as coisas tem que ter)
+
+    }, [taskColumns])
 
     useEffect(() => {
         console.log(taskColumns)
@@ -108,7 +116,7 @@ export default function OrganItem(){
     return (
         <div className="flex items-start gap-3 bg-black flex-1 p-3">
             <DragDropContext onDragEnd={onDragEnd}>
-                {taskColumns.map((item, index) => <ColunaItems removeColumnFn={removeColumn} indexColuna={index} openEditModal={openEditModal} removeFn={removeCard} tituloColuna={item.titleColumn} actualColumnFn={setActualColumnModal} temModalFn={setTemModalCard} key={item.idColumn} tasks={item.Tasks} idColumn={Number(item.idColumn)} temModalEditFn={setTemModalEditCard}/>)}
+                {taskColumns.map((item, index) => <ColunaItems setTemModalExcluirColuna={setTemModalExcluirColuna} removeColumnFn={removeColumn} indexColuna={index} openEditModal={openEditModal} removeFn={removeCard} tituloColuna={item.titleColumn} actualColumnFn={setActualColumnModal} temModalFn={setTemModalCard} key={item.idColumn} tasks={item.Tasks} idColumn={Number(item.idColumn)} temModalEditFn={setTemModalEditCard}/>)}
             </DragDropContext>
             <button onClick={() => setTemModalColumn(true)} className="p-3 text-xl bg-white bg-opacity-50 text-white rounded-xl">
                 Adicionar lista +
@@ -124,6 +132,10 @@ export default function OrganItem(){
             {
                 temModalEditCard &&
                 <ModalEditCard temModalFn={setTemModalEditCard} tituloFn={setNewTitleEditedCard} descFn={setNewDescEditedCard} editCardFn={editCard} newTitleEditedCard={newTitleEditedCard} newDescEditedCard={newDescEditedCard} />
+            }
+            {
+                temModalExcluirColuna &&
+                <ModalExcluirColuna who="coluna" setTemModalExcluirColuna={setTemModalExcluirColuna}/>
             }
         </div>
     )
