@@ -16,13 +16,13 @@ type Props = {
     temModalEditFn: Dispatch<SetStateAction<boolean>>,
     actualColumnFn: Dispatch<SetStateAction<string>>,
     tituloColuna: string,
-    removeFn: (id: string, idColumn: number) => void,
+    activeModalRemoveCard: (id: string, idColumn: number) => void,
     openEditModal: (titleActualCard: string, descActualCard: string, id: string, idxColumn: number) => void,
     indexColuna: number,
-    removeColumnFn: (idxRemovedColumn: number) => void
+    activeModalRemoveColumn: (idxRemovedColumn: number) => void
 }
 
-export default function ColunaItems({setTemModalExcluirColuna, tasks, idColumn, temModalFn, actualColumnFn, tituloColuna, removeFn, openEditModal, indexColuna, removeColumnFn}: Props){
+export default function ColunaItems({setTemModalExcluirColuna, tasks, idColumn, temModalFn, actualColumnFn, tituloColuna, activeModalRemoveCard, openEditModal, indexColuna, activeModalRemoveColumn}: Props){
 
     function handleAddClick(){
         temModalFn(true)
@@ -43,10 +43,10 @@ export default function ColunaItems({setTemModalExcluirColuna, tasks, idColumn, 
                                 <div className="font-bold text-xl">
                                     {tituloColuna}
                                 </div>
-                                {tasks.map((item, index) => <Task key={item.id} titulo={item.titulo} texto={item.desc} id={item.id} index={index} removeFn={removeFn} idColumn={idColumn} openEditModal={openEditModal}/>)}
+                                {tasks.map((item, index) => <Task key={item.id} titulo={item.titulo} texto={item.desc} id={item.id} index={index} activeModalRemoveCard={activeModalRemoveCard} idColumn={idColumn} openEditModal={openEditModal}/>)}
                                 {provided.placeholder}
                                 <button onClick={() => handleAddClick()} className="p-3 text-xl bg-white bg-opacity-50 text-white rounded-xl">Adicionar um card +</button>
-                                <button onClick={() => removeColumnFn(indexColuna)} className="bg-red-500 text-white text-md p-3 rounded-xl self-center">Excluir Coluna</button>
+                                <button onClick={() => activeModalRemoveColumn(indexColuna)} className="bg-red-500 text-white text-md p-3 rounded-xl self-center">Excluir Coluna</button>
                             </div>
                         )
                     }

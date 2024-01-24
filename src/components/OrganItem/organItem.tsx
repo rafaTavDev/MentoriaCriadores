@@ -5,6 +5,7 @@ import ModalAddCard from "../ModalAddCard/ModalAddCard"
 import ModalEditCard from "../ModalEditCard/ModalEditCard"
 import ModalAddColumn from "../ModalAddColumn/ModalAddColumn"
 import ModalExcluirColuna from "../ModalExcluirColuna/ModalExcluirColuna"
+import ModalExcluirCard from "../ModalExcluirCard/ModalExcluirCard"
 
 
 
@@ -22,8 +23,12 @@ export default function OrganItem(){
     const [newDesc, setNewDesc] = useState<string>("")
     const [maxId, setMaxId] = useState<number>(0)
     const [maxIdColumn, setMaxIdColumn] = useState<number>(0)
-    const [temModalExcluirColuna, setTemModalExcluirColuna] = useState<boolean>(true)
+    const [temModalExcluirColuna, setTemModalExcluirColuna] = useState<boolean>(false)
+    const [temModalExcluirCard, setTemModalExcluirCard] = useState<boolean>(false)
     const [colunaPraRemoverIdx, setColunaPraRemoverIdx] = useState<number>(0)
+    const [colunaCardRemover, setColunaCardRemover] = useState<number>(0)
+    const [idCardRemover, setIdCardRemover] = useState<string>("")
+
 
     type cardType = {
         id: string,
@@ -40,12 +45,20 @@ export default function OrganItem(){
 
   
     const [taskColumns, setTaskColumns] = useState<taskColumnsType>([])
+    const [ultimoTaskColumns, setUltimoTaskColumns] = useState<taskColumnsType>([])
 
     useEffect(() => {
         //Salvar o atual taskColumns no banco de dados aqui, pq ai toda vez que mudar vai salvar (Pra isso não dar merda com os usuários, tem que ter confirmação pra fazer tudo, pelo menos pra apagar as coisas tem que ter)
+        console.log(taskColumns)
+
+        fetch("https://localhost:3000/salvarOrgan/1 ", {
+            method: "PUT",
+            headers: { "Content-Type": "application/json"},
+            body:  JSON.stringify({email: "rafa@gmail.com", ultimoTaskColumns, taskColumns})
+        }).catch(err => console.log(err))
 
     }, [taskColumns])
-
+  
     useEffect(() => {
         console.log(taskColumns)
     }, [taskColumns])
@@ -58,13 +71,20 @@ export default function OrganItem(){
         setIdEditedColumn(idColumn)
     }
 
-    function removeCard(id: string, idColumn: number){
-        const taskColumnsCopy: taskColumnsType = JSON.parse(JSON.stringify(taskColumns))
-        console.log(taskColumnsCopy.filter(item => item.idColumn == `${idColumn}`)[0])
-        let newTasks = taskColumnsCopy.filter(item => item.idColumn == `${idColumn}`)[0].Tasks.filter(item => item.id !== id)
-        taskColumnsCopy.filter(item => item.idColumn == `${idColumn}`)[0].Tasks = newTasks
-        setTaskColumns(taskColumnsCopy) 
+    function activeModalRemoveCard(id: string, idColumn: number){
+        setTemModalExcluirCard(true)
+        setColunaCardRemover(idColumn)
+        setIdCardRemover(id)
+    }
 
+    function removeCard(){
+        const taskColumnsCopy: taskColumnsType = JSON.parse(JSON.stringify(taskColumns))
+        console.log(taskColumnsCopy.filter(item => item.idColumn == `${colunaCardRemover}`)[0])
+        let newTasks = taskColumnsCopy.filter(item => item.idColumn == `${colunaCardRemover}`)[0].Tasks.filter(item => item.id !== idCardRemover)
+        taskColumnsCopy.filter(item => item.idColumn == `${colunaCardRemover}`)[0].Tasks = newTasks
+        setUltimoTaskColumns(taskColumns)
+        setTaskColumns(taskColumnsCopy) 
+        setTemModalExcluirCard(false)
     }
 
     function editCard(){
@@ -72,6 +92,7 @@ export default function OrganItem(){
         let idxEditedItem = taskColumnsCopy.filter(item => item.idColumn == `${idEditedColumn}`)[0].Tasks.indexOf(taskColumnsCopy.filter(item => item.idColumn == `${idEditedColumn}`)[0].Tasks.filter(item => item.id == idEditedCard)[0]) 
         taskColumnsCopy.filter(item => item.idColumn == `${idEditedColumn}`)[0].Tasks[idxEditedItem].titulo = newTitleEditedCard
         taskColumnsCopy.filter(item => item.idColumn == `${idEditedColumn}`)[0].Tasks[idxEditedItem].desc = newDescEditedCard
+        setUltimoTaskColumns(taskColumns)
         setTaskColumns(taskColumnsCopy)
         setTemModalEditCard(false)
     }
@@ -82,6 +103,7 @@ export default function OrganItem(){
         let idxColumnToAdd = taskColumnsCopy.findIndex(item => item.idColumn == actualColumnModal)
         taskColumnsCopy[idxColumnToAdd].Tasks.push({id: `${maxId + 1}`, titulo: newTitleCard, desc: newDesc})
         setMaxId(maxId + 1)
+        setUltimoTaskColumns(taskColumns)
         setTaskColumns(taskColumnsCopy)
     }
 
@@ -89,7 +111,17 @@ export default function OrganItem(){
         const taskColumnsCopy = JSON.parse(JSON.stringify(taskColumns))
         taskColumnsCopy.push({titleColumn: newTitleColumn, Tasks:[], idColumn: `${maxIdColumn + 1}`})
         setMaxIdColumn(maxIdColumn + 1)
+        setUltimoTaskColumns(taskColumns)
         setTaskColumns(taskColumnsCopy)
+        fetch("https://localhost/editarColuna", {//Por causa da arquitetura restful a url tem que ser stateless, ou seja, eu mandaria aqui o seguinte: ${maxIdColumn + 1}, mas isso estaria ussando um state e indo contra o pasrão da arquitetura, então o que devemos fazer é usar os ids das colunas gerados unicamente por um uuid
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                idUser: 12345
+            })
+        }) 
     }
 
 
@@ -103,20 +135,28 @@ export default function OrganItem(){
 
     function onDragEnd(result: any){
 
-        const newTaskColumns = reorder(result.source.index, result.destination.index, result.source.droppableId, result.destination.droppableId) //Aqui preciso do index da coluna que solto o item pra fazer taskColumns[indexColunaFinal]
+        const newTaskColumns = reorder(result.source.index, result.destination.index, result.source.droppableId, result.destination.droppableId)//Aqui preciso do index da coluna que solto o item pra fazer taskColumns[indexColunaFinal]
+        setUltimoTaskColumns(taskColumns) 
         setTaskColumns(newTaskColumns)
     }
 
-    function removeColumn(idxRemovedColumn: number){
+    function activeModalRemoveColumn(idxRemovedColumn: number){
+        setTemModalExcluirColuna(true)
+        setColunaPraRemoverIdx(idxRemovedColumn)
+    }
+
+    function removeColumn(){
         let taskColumnsCopy: taskColumnsType = JSON.parse(JSON.stringify(taskColumns))
-        taskColumnsCopy.splice(idxRemovedColumn, 1)
+        taskColumnsCopy.splice(colunaPraRemoverIdx, 1)
+        setUltimoTaskColumns(taskColumns)
         setTaskColumns(taskColumnsCopy) 
+        setTemModalExcluirColuna(false)
     }
 
     return (
         <div className="flex items-start gap-3 bg-black flex-1 p-3">
             <DragDropContext onDragEnd={onDragEnd}>
-                {taskColumns.map((item, index) => <ColunaItems setTemModalExcluirColuna={setTemModalExcluirColuna} removeColumnFn={removeColumn} indexColuna={index} openEditModal={openEditModal} removeFn={removeCard} tituloColuna={item.titleColumn} actualColumnFn={setActualColumnModal} temModalFn={setTemModalCard} key={item.idColumn} tasks={item.Tasks} idColumn={Number(item.idColumn)} temModalEditFn={setTemModalEditCard}/>)}
+                {taskColumns.map((item, index) => <ColunaItems setTemModalExcluirColuna={setTemModalExcluirColuna} activeModalRemoveColumn={activeModalRemoveColumn} indexColuna={index} openEditModal={openEditModal} activeModalRemoveCard={activeModalRemoveCard} tituloColuna={item.titleColumn} actualColumnFn={setActualColumnModal} temModalFn={setTemModalCard} key={item.idColumn} tasks={item.Tasks} idColumn={Number(item.idColumn)} temModalEditFn={setTemModalEditCard}/>)}
             </DragDropContext>
             <button onClick={() => setTemModalColumn(true)} className="p-3 text-xl bg-white bg-opacity-50 text-white rounded-xl">
                 Adicionar lista +
@@ -135,7 +175,11 @@ export default function OrganItem(){
             }
             {
                 temModalExcluirColuna &&
-                <ModalExcluirColuna who="coluna" setTemModalExcluirColuna={setTemModalExcluirColuna}/>
+                <ModalExcluirColuna removeColumnFn={removeColumn} setTemModalExcluirColuna={setTemModalExcluirColuna}/>
+            }
+            {
+                temModalExcluirCard &&
+                <ModalExcluirCard removeCardFn={removeCard} setTemModalExcluirCard={setTemModalExcluirCard}/>
             }
         </div>
     )
