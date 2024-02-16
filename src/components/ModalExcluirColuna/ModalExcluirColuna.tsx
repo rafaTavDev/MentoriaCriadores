@@ -13,7 +13,7 @@ export default function ModalExcluirColuna({ setTemModalExcluirColuna, removeCol
                     Tem certeza que quer excluir?
                 </div>
                 <div className="flex justify-center gap-3">
-                    <div onClick={() => removeColumnFn()} className="bg-white rounded-md cursor-pointer p-2">Sim</div>
+                    <div onClick={() => {removeColumnFn(); setTemModalExcluirColuna(false)}} className="bg-white rounded-md cursor-pointer p-2">Sim</div>
                     <div onClick={() => setTemModalExcluirColuna(false)} className="bg-white rounded-md cursor-pointer p-2">Não</div>
                 </div>
             </div>

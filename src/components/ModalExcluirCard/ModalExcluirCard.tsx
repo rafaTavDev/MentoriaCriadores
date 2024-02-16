@@ -13,7 +13,7 @@ export default function ModalExcluirColuna({ setTemModalExcluirCard, removeCardF
                     Tem certeza que quer excluir?
                 </div>
                 <div className="flex justify-center gap-3">
-                    <div onClick={() => removeCardFn()} className="bg-white rounded-md cursor-pointer p-2">Sim</div>
+                    <div onClick={() => {removeCardFn(); setTemModalExcluirCard(false)}} className="bg-white rounded-md cursor-pointer p-2">Sim</div>
                     <div onClick={() => setTemModalExcluirCard(false)} className="bg-white rounded-md cursor-pointer p-2">Não</div>
                 </div>
             </div>

@@ -1,16 +1,24 @@
 import imgOlho from "../../assets/imgs/olhoSenha.svg"
-import { useState, MouseEvent } from "react"
+import { useState, MouseEvent, useContext, useEffect } from "react"
+import { ErroContext } from "../../Contexts/ModalErroContext"
+import { redirect } from "react-router-dom"
+
 
 
 export default function Login(){
     const [showPassword, setShowPassword] = useState<boolean>(false)
     const [email, setEmail] = useState<string>("")
     const [senha, setSenha] = useState<string>("")
-    const [msgErrLogin, setMsgErrLogin] = useState<boolean>(false)
+    const [msgErrLogin, setMsgErrLogin] = useState<string>("")
+    const [temErrLogin, setTemErrLogin] = useState<boolean>(false)
+
+    const {setLogged, setPrimeiraVez} = useContext(ErroContext)
+
 
     function conferirUsuario(e: MouseEvent<HTMLInputElement>){
         e.preventDefault() //o preventDefault previne até que a conferencia do required seja feita, então vai ter que fazer essa conferência por JS
-        setMsgErrLogin(false)
+        setTemErrLogin(false)
+
         if(email !== "" && senha !== ""){
             fetch("http://localhost:3000/login", {
             method: "POST",
@@ -22,12 +30,26 @@ export default function Login(){
                 senha
             })
             }).then(resp => resp.json()).then(result => {
-                console.log(result)
-                if(result.code == 400){
-                    setMsgErrLogin(true)
-                }
+                if(result[0] == "erro"){
+                    setTemErrLogin(true)
+                    if(result[1]){
+                        setMsgErrLogin(result[1])
+                    }else{
+                        setMsgErrLogin("ocorreu um erro, tente novamente. Caso persista, entre em contato com o suporte.")
+                    }
+                }else{
+                    setPrimeiraVez(result[0].primeiraVez)
+                    localStorage.setItem('authToken', result[0].token)
+                    if(localStorage.getItem("authToken")){
+                        setLogged(true)
+                        redirect("/")
+                    }
+                } 
             }).catch(err => console.log(err))
-            }
+        }else{
+            setTemErrLogin(true)
+            setMsgErrLogin("email e senha não podem estar vazios")
+        }
     }
 
     return(
@@ -40,12 +62,12 @@ export default function Login(){
                     <img onClick={() => setShowPassword(!showPassword)} src={imgOlho} alt="imagem-para-ver-senha" className="h-10 w-auto p-1 cursor-pointer"/>
                 </div>
                 {
-                    msgErrLogin &&
+                    temErrLogin &&
                     <div className="text-red-600 self-center">
-                        email ou senha inválidos
+                        {msgErrLogin}
                     </div>
                 }
-                <input type="submit" onClick={e => {conferirUsuario(e)}} className="self-center p-2 rounded-md bg-red-700 text-white" value="Entrar"/>
+                <input type="submit" onClick={e => {conferirUsuario(e)}} className="self-center p-2 rounded-md bg-red-700 text-white cursor-pointer" value="Entrar"/>
             </form>
         </div>
     )
