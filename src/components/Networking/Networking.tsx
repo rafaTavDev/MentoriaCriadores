@@ -3,6 +3,8 @@ import Perfil from "../Perfil/Perfil"
 import { useContext, useEffect, useState} from "react"
 import { UsuarioType } from "../../Contexts/ModalErroContext"
 
+ 
+
 
 export default function Networking(){
 
@@ -22,6 +24,8 @@ export default function Networking(){
      return(
         <div className="flex-1 bg-black flex flex-col items-center">
          <div className="italic text-zinc-600 text-sm text-center p-3">*para o seu perfil aparecer aqui, você tem que ter informado pelo menos nome, sobrenome e descrição</div>
+
+
          <div className="flex lg:flex-row flex-col items-center flex-1 justify-center gap-3">
             {usuarios.map(item => <Perfil key={item.idUser} nome={item.nome} sobrenome={item.sobrenome} telefone={item.telefone} descricao={item.descricao} profissao={item.profissao} instagram={item.instagram} />)}
          </div>

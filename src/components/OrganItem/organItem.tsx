@@ -238,8 +238,8 @@ export default function OrganItem(){
 
 
     return (
-        <div className="flex lg:flex-row flex-col flex-1 items-start gap-3 bg-green-500 p-3 overflow-y-hidden overflow-x-scroll w-auto">
-            <div className="flex items-start gap-3 bg-purple-900">
+        <div className="flex lg:flex-row flex-col flex-1 items-start gap-3 bg-black p-3 overflow-y-hidden overflow-x-scroll w-auto">
+            <div className="flex items-start gap-3 bg-black">
                 <DragDropContext onDragEnd={onDragEnd}>
                     {taskColumns.map((item, index) => <ColunaItems setTemModalExcluirColuna={setTemModalExcluirColuna} activeModalRemoveColumn={activeModalRemoveColumn} indexColuna={index} openEditModal={openEditModal} activeModalRemoveCard={activeModalRemoveCard} tituloColuna={item.titleColumn} actualColumnFn={setActualColumnModal} temModalFn={setTemModalCard} key={item.idColumn} tasks={item.Tasks} idColumn={Number(item.idColumn)} temModalEditFn={setTemModalEditCard}/>)}
                 </DragDropContext>
