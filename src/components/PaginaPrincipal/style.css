@@ -1,0 +1,21 @@
+
+.txt-animado span::before{
+    content: "asdfasdfasdfasdf";
+    color: #f00;
+    animation: palavras 15s infinite;
+  }
+
+  @keyframes palavras {
+    0%, 25%{
+      content: "criadores";      
+    }
+    26%, 50%{
+      content: "desruptivos";      
+    }
+    51%, 75%{
+      content: "fora da caixa";     
+    }
+    76%, 100%{
+      content: "a melhor mentoria do Brasil";      
+    }
+  }

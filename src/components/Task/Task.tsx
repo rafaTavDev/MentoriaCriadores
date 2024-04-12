@@ -30,6 +30,7 @@ export default function Task({texto, id, index, titulo, activeModalRemoveCard, i
                         <div className="flex gap-3">
                             <img onClick={() => openEditModal(titulo, texto, id, idColumn)} className="w-6 h-auto p-1 bg-white opacity-80 rounded-md" src={imgEditar} alt="icone-editar" />{/*id==id, idColumn == index */}
                             <img onClick={() => {activeModalRemoveCard(id, idColumn, index)}} className="w-6 h-auto p-1 bg-white opacity-80 rounded-md" src={imgApagar} alt="icone-apagar" />
+                            <div className={`flex-1 ${index == 0? 'bg-orange-600': 'bg-blue-600'} rounded-md`}></div>
                         </div>  
                     </div>
                 )

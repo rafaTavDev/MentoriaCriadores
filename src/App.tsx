@@ -39,7 +39,6 @@ function App() {
         logged ?
         <div className='h-screen flex flex-col relative'>
           <Menu/>
-
           <Outlet/>
           {
             temErro &&

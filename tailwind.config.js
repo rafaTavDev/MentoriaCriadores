@@ -14,7 +14,7 @@ export default {
       },
       backgroundImage: {
         bannerPrincipal: "url('./src/assets/imgs/banner-thales.png')"
-      }
+      },
     },
   },
   plugins: [

@@ -4,9 +4,28 @@ import AvatarEditor from "react-avatar-editor";
 import { UsuarioType } from "../../Contexts/ModalErroContext";
 import imgOlho from "../../assets/imgs/olhoSenha.svg"
 import xisBranco from "../../assets/imgs/xisBranco.svg"
+import Select from 'react-select'
 
 
 export default function EditarPerfil(){
+
+  type profType = {
+    profissao: string
+ }
+
+ type optionType = {
+    value: string,
+    label: string
+ }
+
+ const [profissoes, setProfissoes] = useState<profType[]>([])
+
+ 
+ const options: optionType[] = []
+
+ profissoes.forEach((item) => {
+   options.push({value: item.profissao, label: item.profissao})
+ })
   
 
   const {usuario, setUsuario, setTemErro, setUsuarios, wantEdit, setWantEdit, primeiraVez, setPrimeiraVez} = useContext(ErroContext)
@@ -15,6 +34,7 @@ export default function EditarPerfil(){
     fetch("http://localhost:3000/Usuario", {headers: {"authorization": localStorage.getItem("authToken")? `Bearer ${localStorage.getItem("authToken")}` : ""}}).then(res => res.json()).then(data => {
       setUsuario(data[0])
     }).catch(() => setTemErro(true))
+    fetch("http://localhost:3000/pegarProfissoes").then(res => res.json()).then(data => setProfissoes(data))
   }, [wantEdit])
 
 
@@ -191,7 +211,7 @@ export default function EditarPerfil(){
             }
 
             <div className="flex items-center justify-between">
-              <div className="text-thalesRed text-2xl">
+              <div className="text-white text-2xl">
                 Redefinir senha
               </div>
               <img src={xisBranco} alt="xis para fechar o modal" className="h-8 w-auto cursor-pointer" onClick={() => setWantEdit(false)}/>
@@ -216,7 +236,7 @@ export default function EditarPerfil(){
               }             
             </div>
 
-            <div className="text-thalesRed text-2xl">
+            <div className="text-white text-2xl">
               Redefinir dados pessoais
             </div>
             
@@ -228,9 +248,7 @@ export default function EditarPerfil(){
               <input type="text" className="w-1/3 outline-none border-none rounded-md p-2" placeholder="Sobrenome" value={sobrenomeEdit} onChange={e => setSobrenomeEdit(e.target.value)}/>
             </div>
 
-            <div className="flex items-center gap-3">
-              <input type="text" className="w-1/3 outline-none border-none rounded-md p-2" placeholder="Profissão" value={profissaoEdit} onChange={e => setProfissaoEdit(e.target.value)}/>
-            </div>
+            <Select onChange={(opcao) => {if(opcao?.value){setProfissaoEdit(opcao.value)}}} placeholder="Sua profissão..." options={options} styles={{control: (styles) => ({...styles, backgroundColor: "white", width: "300px", fontSize: "13px"})}} />
 
             <div className="flex items-center gap-3">
               <input type="number" className="w-1/3 outline-none border-none rounded-md p-2" placeholder="whatsapp ex: 21999999999" value={telefoneEdit} onChange={e => setTelefoneEdit(e.target.value)}/>

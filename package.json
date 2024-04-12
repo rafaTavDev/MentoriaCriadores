@@ -12,14 +12,18 @@
   "dependencies": {
     "@hello-pangea/dnd": "^16.5.0",
     "@radix-ui/react-select": "^2.0.0",
+    "@types/react-select": "^5.0.1",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",
     "jsonwebtoken": "^9.0.2",
     "lucide-react": "^0.365.0",
+    "particles-bg": "^2.5.5",
     "react": "^18.2.0",
     "react-avatar-editor": "^13.0.2",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.21.2",
+    "react-select": "^5.8.0",
+    "react-simple-typewriter": "^5.0.1",
     "tailwind-merge": "^2.2.2",
     "tailwindcss-animate": "^1.0.7"
   },
